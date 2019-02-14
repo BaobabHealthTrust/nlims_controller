@@ -44,6 +44,14 @@ Rails.application.routes.draw do
 			get  '/query_requested_order_by_npid/:npid'								=> 'order#query_requested_order_by_npid2'
 
 		end
-  end
 
+		namespace :v3 do
+
+			post '/request_order'																			=> 'order#request_order'
+			post '/confirm_order_request'													 		=> 'order#confirm_order_request'
+			get  '/query_requested_order_by_npid/:npid'								=> 'order#query_requested_order_by_npid2'
+
+		end		
+	end
+	
 end
