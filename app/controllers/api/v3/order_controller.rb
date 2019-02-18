@@ -41,8 +41,6 @@ class API::V3::OrderController < ApplicationController
 								msg = "treatment history not provided"
 							elsif(!params['sample_date']) #Added to satisfy for TB lab request
 								msg = "sample_date not provided"
-							elsif(!params['sample_source']) #Added to satisfy for TB lab request
-		                        msg = "sample_source not provided"
 		                    elsif(!params['order_location'])
 		                        msg = "sample order location not provided"
 		                    elsif(!params['who_order_test_first_name'])
@@ -160,8 +158,6 @@ class API::V3::OrderController < ApplicationController
 			msg = "treatment history not provided"
 		elsif(!params['sample_date']) #Added to satisfy for TB lab request
 			msg = "sample_date not provided"
-		elsif(!params['sample_source']) #Added to satisfy for TB lab request
-			msg = "sample_source not provided"
 		elsif(!params['order_location'])
 			msg = "sample order location not provided"
 		elsif(!params['who_order_test_first_name'])

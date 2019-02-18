@@ -4,7 +4,6 @@ module TB
 
     property :tracking_number, String
     property :sample_status, String
-    property :sample_source, String # sample_souce: Added to satisfy for TB lab request
     property :sample_date, String #sample date: Added to satis
     property :date_created, {}
     property :sending_facility, String

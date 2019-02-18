@@ -62,8 +62,6 @@ module TB
                 sample_type_id = SpecimenType.get_specimen_type_id(params[:sample_type])
                 sample_status_id = SpecimenStatus.get_specimen_status_id(params[:sample_status])
                 
-                #send to couch:
-                sample_source = params[:sample_source] #Added to satisfy for couch
                 
           sp_obj =  Speciman.create(
                       :tracking_number => tracking_number,
@@ -84,7 +82,6 @@ module TB
                       :recommended_examination => params[:recommended_examination], #Added to satisfy for TB lab request 
                       :treatment_history => params[:treatment_history], #Added to satisfy for TB lab request
                       :sample_date => params[:sample_date], #Added to satisfy for TB lab request
-                      :sample_source => params[:sample_source] #Added to satisfy for TB lab request
                                         
                 )
 
@@ -183,7 +180,6 @@ module TB
                       sample_statuses: sample_status,
                       test_statuses: test_status,
                       sample_status: params[:sample_status], 
-                      sample_source: sample_source,
                       sample_date: params[:sample_date],
                       recommended_examination: params[:recommended_examination],
                       treatment_history: params[:treatment_history] 
@@ -535,7 +531,6 @@ module TB
                       sample_statuses: sample_status,
                       test_statuses: test_status,
                       sample_status: "specimen_not_collected",
-                      sample_source: sample_source,
                       sample_date: params[:sample_date],
                       recommended_examination: params[:recommended_examination],
                       treatment_history: params[:treatment_history] 
