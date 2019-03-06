@@ -81,7 +81,8 @@ module TB
                       :date_created => time,
                       :recommended_examination => params[:recommended_examination], #Added to satisfy for TB lab request 
                       :treatment_history => params[:treatment_history], #Added to satisfy for TB lab request
-                      :sample_date => params[:sample_date], #Added to satisfy for TB lab request
+                      :sample_date => params[:sample_date] #Added to satisfy for TB lab request
+                      
                                         
                 )
 
@@ -180,9 +181,10 @@ module TB
                       sample_statuses: sample_status,
                       test_statuses: test_status,
                       sample_status: params[:sample_status], 
-                      sample_date: params[:sample_date],
-                      recommended_examination: params[:recommended_examination],
-                      treatment_history: params[:treatment_history] 
+                      sample_date: params[:sample_date], #Added to satify for TB Order
+                      recommended_examination: params[:recommended_examination], #Added to satisfy for TB Order
+                      treatment_history: params[:treatment_history], #Added to satisfy for TB Order
+                      time_line: params[:time_line]
 
                 )
 
@@ -515,12 +517,12 @@ module TB
                       }
                 end
 
-          c_order  =  Order::TB.create(
+          c_order  =  TB::Order.create(
                       tracking_number: tracking_number,
-                      sample_type: 'not_assigned',
+                      sample_type: params[:sample_type],
                       date_created: params[:date_sample_drawn],
                       sending_facility: params[:health_facility_name],
-                      receiving_facility: 'not_assigned',
+                      receiving_facility: params[:target_lab],
                       tests: params[:tests],
                       test_results: couch_tests,
                       patient: patient,
@@ -530,10 +532,11 @@ module TB
                       who_order_test: who_order,
                       sample_statuses: sample_status,
                       test_statuses: test_status,
-                      sample_status: "specimen_not_collected",
-                      sample_date: params[:sample_date],
-                      recommended_examination: params[:recommended_examination],
-                      treatment_history: params[:treatment_history] 
+                      sample_status: params[:sample_status], 
+                      sample_date: params[:sample_date], #Added to satisfy for TB Order
+                      recommended_examination: params[:recommended_examination], #Added to satisfy for TB Order
+                      treatment_history: params[:treatment_history], #Added to satisfy for TB Order
+                      time_line: params[:time_line] #Added to satisdy for TB Order
                 )
 
                 sp = Speciman.find_by(:tracking_number => tracking_number)

@@ -13,6 +13,7 @@ module TB
     property :test_results, {}
     property :patient, {}
     property :treatment_history, String #treatment_history: Added to satisfy for TB Lab request
+    property :time_line, String #if a FOLLOW UP patient add this
     property :order_location, String
     property :districy, String
     property :priority, String
