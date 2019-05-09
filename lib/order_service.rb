@@ -58,7 +58,7 @@ module  OrderService
                   sample_type_id = SpecimenType.get_specimen_type_id(params[:sample_type])
                   sample_status_id = SpecimenStatus.get_specimen_status_id(params[:sample_status])
                  
-
+      
             sp_obj =  Speciman.create(
                         :tracking_number => tracking_number,
                         :specimen_type_id =>  sample_type_id,
@@ -74,7 +74,7 @@ module  OrderService
                         :sending_facility => params[:health_facility_name],
                         :requested_by =>  params[:requesting_clinician],
                         :district => params[:district],
-                        :date_created => time
+                        :date_created => params[:date_sample_drawn]
                   )
 
                   
@@ -172,6 +172,7 @@ module  OrderService
                         sample_status: params[:sample_status] 
                   )
 
+                  
                   sp = Speciman.find_by(:tracking_number => tracking_number)
                   sp.couch_id = c_order['_id']
                   sp.save()
@@ -346,6 +347,15 @@ module  OrderService
             )
 
             return true
+      end
+
+      def self.check_if_dispatched(tracking_number)
+            rs = SpecimenDispatch.find_by_sql("SELECT * FROM specimen_dispatches WHERE tracking_number='#{tracking_number}'")
+            if rs.length > 0
+                  return true
+            else  
+                  return false
+            end
       end
 
       def self.request_order(params,tracking_number)
