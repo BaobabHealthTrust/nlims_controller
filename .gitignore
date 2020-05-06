@@ -13,4 +13,8 @@
 !/log/.keep
 !/tmp/.keep
 
+/node_modules
+/vendor
+/yarn-error.log
+/config/*.yml
 .byebug_history

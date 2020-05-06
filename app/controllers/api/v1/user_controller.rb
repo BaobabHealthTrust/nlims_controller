@@ -5,21 +5,33 @@ class API::V1::UserController < ApplicationController
 
 
 	def create_user
-		token =  request.headers[:authorization]
+		
+		token = request.headers['token']
 		if params[:location] && params[:app_name] && params[:password] && params[:username] && token && params[:partner]
 			status = UserService.check_user(params[:username])
 			if status == false
-
-				details = UserService.create_user(params)
-				response = {
-						status: 200,
-						error: false,
-						message: 'account created successfuly',
+				st = UserService.check_account_creation_request(token)
+				if st == true
+						details = UserService.create_user(params)
+						response = {
+								status: 200,
+								error: false,
+								message: 'account created successfuly',
+								data: {
+									token: details[:token],
+									expiry_time: details[:expiry_time]
+								}
+							}
+				else
+					response = {
+						status: 401,
+						error: true,
+						message: 'can not create account',
 						data: {
-							token: details[:token],
-							expiry_time: details[:expiry_time]
+						
 						}
 					}
+				end						
 			else
 				response = {
 					status: 401,
@@ -54,7 +66,7 @@ class API::V1::UserController < ApplicationController
 
 			if (status == true)
 				details = UserService.compute_expiry_time
-			
+				UserService.prepare_token_for_account_creation(details[:token])
 				response = {
 					status: 200,
 					error: false,
@@ -90,10 +102,9 @@ class API::V1::UserController < ApplicationController
 
 
 	def check_token_validity
-		token =  request.headers[:authorization]
+		token = request.headers['token']
 		if token
-
-			status = UserService.check_token(params[:token])
+			status = UserService.check_token(token)
 			if status == true
 				response = {
 					status: 200,
