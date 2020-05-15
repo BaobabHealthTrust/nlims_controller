@@ -5,81 +5,124 @@ module TestService
 	def self.update_test(params)
 
 		sql_order = OrderService.get_order_by_tracking_number_sql(params[:tracking_number])
-		
+		tracking_number = params[:tracking_number]
+
+		if params[:result_date].blank?
+			result_date = Time.now.strftime("%Y%m%d%H%M%S")
+		else
+			result_date = params[:result_date]
+		end 
 
 		if !sql_order == false 
 			order_id = sql_order.id
+			couch_id = sql_order.couch_id
 			test_name = params[:test_name]
+			test_name = test_name.gsub("_"," ")
+			test_id = Test.find_by_sql("SELECT tests.id FROM tests INNER JOIN test_types ON tests.test_type_id = test_types.id
+							WHERE tests.specimen_id = '#{order_id}' AND test_types.name = '#{test_name}'")
 			
-			test_id = Test.find_by_sql("SELECT tests.id,tests.doc_id FROM tests INNER JOIN test_types ON tests.test_type_id = test_types.id
-							WHERE tests.order_id = '#{order_id}' AND test_types.name = '#{test_name}'")
-
 			test_status = TestStatus.where(name: params[:test_status]).first
 			
 			if test_id
 				ts = test_id[0]
 				test_id = ts['id']
-				doc_id =  ts['doc_id']
-				
-				co_status = CouchTestStatusUpdate.create(
-								test_status_id: test_status.id,
-								who_updated_name: params[:who_updated]['first_name'].to_s + " " + params[:who_updated]['last_name'].to_s, 
-								who_updated_id: params[:who_updated]['id_number'].to_s,
-								test_id: test_id
-					)
-
-				TestStatusUpdate.create(
+			
+				TestStatusTrail.create(
 						test_id: test_id,
-						doc_id: co_status.id,
 						time_updated: params[:time_updated],
 						test_status_id: test_status.id,
 						who_updated_id: params[:who_updated]['id_number'].to_s,
-						who_updated_name: params[:who_updated]['first_name'].to_s + " " + params[:who_updated]['last_name'].to_s,				
+						who_updated_name: params[:who_updated]['first_name'].to_s + " " + params[:who_updated]['last_name'].to_s,
+						who_updated_phone_number: ''				
 
-					)
-				update_test_status_sql(test_id, test_status.id)
-<<<<<<< HEAD
-				update_test_status_couch(doc_id, test_status.id)
+					)		
 
-			end
+				tst_update = Test.find_by(:id => test_id)
+				tst_update.test_status_id = test_status.id
+				tst_update.save
 
 
-=======
+				details = {}
+				couch_test = {}
+				time = Time.now.strftime("%Y%m%d%H%M%S")
+				details = {
+					  "status" => params[:test_status],
+					  "updated_by":  {
+							:first_name => params[:who_updated]['first_name'],
+							:last_name => params[:who_updated]['last_name'],
+							:phone_number => '',
+							:id => params[:who_updated]['id_number'] 
+							}
+				}
+				couch_test[test_name] = details
+
 				
+				
+				test_results_measures = {}
+				results_measure = {}
+				couch_test_results = ""
 				if params[:results]
 					results = params[:results]
-				
+					
 					results.each do |key, value|
 						measure_name =  key
 						result_value = value
-
+						
 						measure = Measure.where(name: measure_name).first
-
-						c_test_re = CouchTestResult.create(
-								measure_id: measure.id,
-								test_id: test_id,
-								result: result_value,						
-								time_entered: ''
-								)
 
 						TestResult.create(
 							measure_id: measure.id,
 							test_id: test_id,
-							result: result_value,
-							doc_id: c_test_re.id,
-							time_entered: ''
+							result: result_value,	
+							device_name: '',						
+							time_entered: result_date
 							)
+						test_results_measures[measure_name] = { 'result_value': result_value }
 						
 					end	
 
+					results_measure[test_name] = test_results_measures
+				
+
 				end
+
+				
+
+				if !results_measure.blank?
+					retr_order = OrderService.retrieve_order_from_couch(couch_id)
+					couch_test_statuses = retr_order['test_statuses'][test_name]
+					couch_test_statuses[time] =  details 
+					retr_order['test_statuses'][test_name] =  couch_test_statuses
+
+					
+					
+					retr_order['test_results'][test_name] = {
+						'results': test_results_measures,
+						'date_result_entered': result_date,
+						'result_entered_by': {
+							:first_name => params[:who_updated]['first_name'],
+							:last_name => params[:who_updated]['last_name'],
+							:phone_number => '95625',
+							:id => params[:who_updated]['id_number'] 
+						}                             
+				    }
+		
+					OrderService.update_couch_order(couch_id,retr_order)
+				else
+					retr_order = OrderService.retrieve_order_from_couch(couch_id)
+					couch_test_statuses = retr_order['test_statuses'][test_name]
+					couch_test_statuses[time] =  details 
+					retr_order['test_statuses'][test_name] =  couch_test_statuses
+					OrderService.update_couch_order(couch_id,retr_order)
+				end
+
+
 				return true
 			else
 				return false
 
 			end
 
->>>>>>> 6dca82065ac6ac9c61e5b39195bbe0b4574ba920
 		else
 			return false
 		end
@@ -87,44 +130,159 @@ module TestService
 
 	end
 
+	def self.test_no_results(npid)
 
-	def self.update_test_status_sql(test_id, status_id)
-        Test.update(test_id,test_status_id: status_id)
-    end
+		res = Test.find_by_sql("SELECT tests.time_created,test_types.name, test_statuses.name AS test_status, tests.id AS tst_id, specimen.tracking_number 
+							FROM tests INNER JOIN test_statuses ON test_statuses.id = tests.test_status_id INNER JOIN test_types
+							ON test_types.id = tests.test_type_id
+							INNER JOIN patients ON patients.id = tests.patient_id
+							INNER JOIN specimen ON specimen.id = tests.specimen_id
+							WHERE patients.patient_number='#{npid}' AND (tests.test_status_id != '4' AND tests.test_status_id != '5')")
+		data = []
+		if !res.blank?
+			res.each do |d|
+				data.push({'tracking_number': d['tracking_number'],'test_name': d['name'],'created_at': d['time_created'].to_date,'status': d['test_status']})				
+			end
+			return [true,data]
+		else
+			return [false,'']
+		end
+	end
 
-    def self.update_test_status_couch(doc_id, status_id)
-    	raise doc_id.inspect
-        Test.update(test_id,test_status_id: status_id)
-    end
+	def self.query_test_status(tracking_number)
+		spc_id = Speciman.find_by(:tracking_number => tracking_number)['id']
+		status = Test.find_by_sql("SELECT test_statuses.name,test_types.name AS tst_name FROM test_statuses INNER JOIN tests ON tests.test_status_id = test_statuses.id 
+							INNER JOIN test_types ON test_types.id = tests.test_type_id
+							WHERE tests.specimen_id='#{spc_id}'
+						")
+		
+		if !status.blank?
+			st = status.collect do |s|
+					{s['tst_name'] => s['name']}
+			end
+			return [true,st]
+		else
+			return [false,'']
+		end
 
-<<<<<<< HEAD
-=======
-    def self.add_test(params)
+	end
 
-    	te_id = TestType.where(name: params[:test_name]).first
-    
-    	c_tes = CouchTest.create(
-    			order_id: params[:tracking_number],
-    			test_type_id: te_id.id,
-    			time_created: Date.today.strftime("%a %b %d %Y"),
-    			test_status_id: 2,
-    		)
+	def self.query_test_measures(test_name)
+		test_name = test_name.gsub("_"," ")
+		test_type_id = TestType.find_by(:name => test_name)['id']
+		res = TesttypeMeasure.find_by_sql("SELECT measures.name FROM testtype_measures INNER JOIN measures
+									ON measures.id = testtype_measures.measure_id 
+									INNER JOIN test_types ON test_types.id = testtype_measures.test_type_id
+									WHERE test_types.id='#{test_type_id}'
+								")
 
-    	Test.create(
-    			order_id: params[:tracking_number],
-    			test_type_id: te_id.id,
-    			time_created: Date.today.strftime("%a %b %d %Y"),
-    			doc_id: c_tes.id,
-    			test_status_id: 2,
+		if !res.blank?
+			r = res.collect do |t|
+				t['name']
+			end
+		else
+			return  false
+		end
+	end
 
-    		)
+	def self.add_test(params)		
+		tests = params['tests']
+		tracking_number = params['tracking_number']
+		sql_order = OrderService.get_order_by_tracking_number_sql(tracking_number)
+		spec_id = sql_order.id
+		updater = params['who_updated']
+		res = Test.find_by_sql("SELECT visit_id AS vst_id FROM tests WHERE specimen_id='#{spec_id}' LIMIT 1")
+		visit_id = res[0]['vst_id']
+		order = OrderService.retrieve_order_from_couch(sql_order.couch_id)		
+		tet = []
+		test_results = {}
+		details = {}
+		tet = order['tests']
+		test_results = order['test_results']
+		test_statuses = order['test_statuses']
+		tests.each do |tst|
+			te_id = TestType.where(name: tst).first
+			Test.create(
+				:specimen_id => spec_id,
+				:test_type_id => te_id.id,
+				:visit_id => visit_id,
+				:created_by => updater['first_name'].to_s + " " + updater['lastt_name'].to_s,
+				:panel_id => '',
+				:time_created => Time.new.strftime("$Y%m%d%H%M%S"),
+				:test_status_id => TestStatus.find_by_sql("SELECT id AS sts_id FROM test_statuses WHERE name='Drawn'")[0]['sts_id']
+		  )
+			tet.push(tst)
+			test_results[tst] = {
+					'results': {},
+                    'date_result_entered': '',
+					'result_entered_by': {}  
+				}
+			time = Time.new.strftime("%Y%m%d%H%M%S")
+			details[time] = {
+				"status" => "Drawn",
+								"updated_by":  {
+                                    :first_name => updater['first_name'],
+                                    :last_name => updater['last_name'],
+                                    :phone_number => updater['phone_number'],
+                                    :id => updater['id_number'] 
+                                }
+			}
+			test_statuses[tst] = details
+		end
 
+		order['tests'] = tet	
+		order['test_results'] =  test_results
+		order['test_statuses'] = test_statuses
+
+		OrderService.update_couch_order(sql_order.id,order)
         return true
-    end
+	end
+	
+	def self.retrieve_test_catelog
+		if File.exists?("#{Rails.root}/public/test_catelog.json")
+			dat = File.read("#{Rails.root}/public/test_catelog.json")
+			return JSON.parse(dat)
+		else
+			return false
+		end
+	end
 
+	def self.retrieve_order_location
+		re = Ward.find_by_sql("SELECT wards.name FROM wards")
+		if !re.blank?
+			r = re.collect  do |t|
+				t['name']
+			end
+		else
+			return false
+		end
+	end
 
+	def self.retrieve_target_labs
+		re = Site.find_by_sql("SELECT sites.name FROM sites")
+		if !re.blank?
+			r = re.collect  do |t|
+				t['name']
+			end
+		else
+			return false
+		end
+	end
 
-    def self.edit_test_result
+    def self.get_test_types
+
+        res =  TestType.find_by_sql("SELECT test_types.name AS test_name FROM test_types")
+        tst = []
+        if !res.blank? 
+            res.each do |te|
+                tst.push(te['test_name'])                
+            end
+
+            return [tst,true]
+        else
+            return ["", false]
+        end
+
 
     end
 
@@ -133,8 +291,8 @@ module TestService
     	res1 = TestType.find_by_sql(
     						"SELECT test_types.name AS test_name, test_types.id AS tes_id FROM test_types 
     							INNER JOIN tests ON tests.test_type_id = test_types.id
-    							INNER JOIN orders ON tests.order_id = orders.id
-    							WHERE orders.id = '#{tracking_number}'"
+    							INNER JOIN specimen ON tests.specimen_id = specimen.id
+    							WHERE specimen.tracking_number = '#{tracking_number}'"
     		)
 
     	details = {}
@@ -144,7 +302,7 @@ module TestService
 
     		res1.each do |te|
     			
-    			res = Order.find_by_sql("SELECT measures.name AS measure_nam, measures.id AS me_id FROM measures 
+    			res = Speciman.find_by_sql("SELECT measures.name AS measure_nam, measures.id AS me_id FROM measures 
     							INNER JOIN testtype_measures ON testtype_measures.measure_id = measures.id
     							INNER JOIN test_types ON test_types.id = testtype_measures.test_type_id
     							WHERE test_types.id = '#{te.tes_id}'
@@ -176,6 +334,4 @@ module TestService
 
     end
 
-
->>>>>>> 6dca82065ac6ac9c61e5b39195bbe0b4574ba920
 end
