@@ -14,7 +14,15 @@ This README documents steps that are necessary to get the service up and running
 * Couchdb
 
 ### Configuration
-1. Rename .example files in config
+1. Rename .example files in config.
+From the commandline, moved into config directory then rename all files with .example by removing the .example extension from then. Here is the command: 
+```bash
+$cd config
+$cp database.yml.example database.yml
+$cp application.yml.example application.yml
+$cp couchdb.yml.example couchdb.yml
+$cp secrets.yml.example secrets.yml
+```
    
 * Database creation
 
