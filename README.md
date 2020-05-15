@@ -86,7 +86,7 @@ This README documents steps that are necessary to get the service up and running
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<<: *development<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;suffix: test<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;production:<br>
+   production:<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<<: *development<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;protocol: 'http'<br>
    
@@ -119,6 +119,23 @@ This README documents steps that are necessary to get the service up and running
 ### Production
 
    To deploy the application in production you can either use nginx or apache2 servers. Nginx is recommended since it has been tested and approved by our deployment team.
+   
+   1. Initialize database
+   
+      To initialize database for development, in the database.yml folder in production block, provide the name of the database and the username. In your commandline type the following (replacing **your_password** with your actual password of mysql database):
+      ```
+      export NLIMS_DATABASE_PASSWORD='your_password'
+      ```
+      
+      Then run the following commands to create, migrate and seed data into your database:
+      ```bash
+      rails db:create RAILS_ENV=production
+      rails db:migrate RAILS_ENV=production
+      rails db:seed RAILS_ENV=production
+      ```
+      
+   2. Deploy
+   
    
 
 ### How to use
