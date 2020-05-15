@@ -26,6 +26,16 @@ This README documents steps that are necessary to get the service up and running
    cp secrets.yml.example secrets.yml
    ```
    
+2. Configure your facility.
+   
+   Using your text editor open application.yml in config and provide district, facility_name and facility_code.
+   Thus, your application.yml should look like this 
+   ```
+   district: "Lilongwe"
+   facility_name: "Kamuzu Central Hospital"
+   facility_code: 'KCH'
+   ```
+   
 2. Configure your database.
 
    While still in config folder, provide details of your mysql database in database.yml and couchdb in couchdb.yml respectively. 
@@ -108,9 +118,54 @@ This README documents steps that are necessary to get the service up and running
 
 ### Production
 
-   To deploy the application in production you can either use nginx or apache2 servers. Nginx is recommended since it has been tested and approved.
+   To deploy the application in production you can either use nginx or apache2 servers. Nginx is recommended since it has been tested and approved by our deployment team.
+   
 
 ### How to use
+
+   
+   1. Retrieve target labs.
+
+      The following endpont is used to get a list of target labs from LIMS:
+      ```
+      Method: GET
+      URL: http://your_host:3010/api/v1/retrieve_target_labs
+      ```
+   1. Order tests
+
+      The following endpoint is used to order tests in LIMS: 
+      ```
+      Method: POST
+      URL: http://your_host:3010/api/v1/create_order
+      Payload: {
+            "district"=>"Lilongwe",
+            "health_facility_name"=>"Ntchisi District Hospital",
+            "first_name"=>"Ted",
+            "last_name"=>"Talk",
+            "middle_name"=>"",
+            "date_of_birth"=>"1994-05-15",
+            "gender"=>"M",
+            "national_patient_id"=>"P158602329249",
+            "phone_number"=>"", 
+            "who_order_test_last_name"=>"User", 
+            "who_order_test_first_name"=>"Super", 
+            "who_order_test_id"=>"1", 
+            "order_location"=>"TB", 
+            "date_sample_drawn"=>"2020-05-15T14:55:33.000+02:00", 
+            "tests"=>["TB"], 
+            "sample_priority"=>"Diagnosis", 
+            "art_start_date"=>"not_applicable", 
+            "sample_type"=>"Sputum", 
+            "sample_status"=>"specimen_not_collected", 
+            "target_lab"=>"Kamuzu Central Hospital", 
+            "recommended_examination"=>nil, 
+            "treatment_history"=>nil, 
+            "sample_date"=>"2020-05-15", 
+            "sending_facility"=>"Ntchisi District Hospital", 
+            "time_line"=>"NA", 
+            "requesting_clinician"=>"admin"
+        }
+      ```
 
 ### Contribution
 
