@@ -33,7 +33,6 @@ gem 'apipie-rails'
 gem 'rest-client'
 
 gem 'couchrest_model'
-gem 'passenger', '~> 5.0', '>= 5.0.30'
 gem 'sucker_punch'
 gem 'passenger'
 group :development, :test do
