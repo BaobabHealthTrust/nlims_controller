@@ -16,9 +16,5 @@
 /node_modules
 /vendor
 /yarn-error.log
-<<<<<<< HEAD
-=======
-/config/*.yml
->>>>>>> master
 .byebug_history
 config/*.yml
