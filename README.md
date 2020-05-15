@@ -5,14 +5,17 @@ This README documents steps that are necessary to get the service up and running
 
 ### Requirements
 
-ruby ~> 2.5.3
-bundler ~> 2.1.4
-rails ~> 5.1.7
+* ruby ~> 2.5.3
+* bundler ~> 2.1.4
+* rails ~> 5.1.7
 
 ### System dependencies
+* Mysql 
+* Couchdb
 
-* Configuration
-
+### Configuration
+1. Rename .example files in config
+   
 * Database creation
 
 * Database initialization
