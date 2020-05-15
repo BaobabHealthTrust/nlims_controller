@@ -108,6 +108,8 @@ This README documents steps that are necessary to get the service up and running
 
 ### Production
 
+   To deploy the application in production you can either use nginx or apache2 servers. Nginx is recommended since it has been tested and approved.
+
 ### How to use
 
 ### Contribution
