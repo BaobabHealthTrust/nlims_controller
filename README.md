@@ -1,4 +1,4 @@
-[![GitHub issues](https://img.shields.io/github/issues/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/issues)
+[![GitHub issues](https://img.shields.io/github/issues/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/issues) [![GitHub forks](https://img.shields.io/github/forks/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/network) [![GitHub stars](https://img.shields.io/github/stars/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/stargazers) [![GitHub license](https://img.shields.io/github/license/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller)
 ### Brief description
 
 NLims Controller is a Laboratory Information Management Systems' [(LIMS)](https://github.com/BaobabHealthTrust/iBLIS.git) service which communicates with Eletronic Mecical Record System [(EMRS)](https://github.com/BaobabHealthTrust/BHT-EMR-API.git). It is used to exhange lab orders between these two systems.
