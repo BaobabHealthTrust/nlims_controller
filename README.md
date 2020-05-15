@@ -11,21 +11,21 @@ This README documents steps that are necessary to get the service up and running
 
 ### Dependencies
 * Mysql ~> 5.7
-* Couchdb
+* Couchdb ~> 3.1.0
 
 ### Configuration
 1. Rename .example files in config.
 
-From the commandline, moved into config directory then rename all files with .example by removing the .example extension from then. 
-
-Here is the command: 
-```bash
-cd config
-cp database.yml.example database.yml
-cp application.yml.example application.yml
-cp couchdb.yml.example couchdb.yml
-cp secrets.yml.example secrets.yml
-```
+   From the commandline, moved into config directory then rename all files with .example by removing the .example extension from then. 
+   
+   Here is the command: 
+   ```bash
+   cd config
+   cp database.yml.example database.yml
+   cp application.yml.example application.yml
+   cp couchdb.yml.example couchdb.yml
+   cp secrets.yml.example secrets.yml
+   ```
    
 2. Configure your database.
 
@@ -59,14 +59,39 @@ cp secrets.yml.example secrets.yml
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;database: nlims_production<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;username: **your_username**<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password: <%= ENV['NLIMS_DATABASE_PASSWORD'] %><br>
-       
+   
+   In couchdb, provide details of your couchdb including protocol (whether http or https), port (normally runs on 5984, but can be replaced with your couchdb port), host, database name in form of prefix and suffix (for example, if your database name is "lims_database" then your prefix will be "lims" and "database" will be your suffix, but if your database is just "lims" then "lims" will be your prefix and no suffix), username and password.
+   
+   Here is an example of how your couchdb.yml will be:
+   
+   >development: &development<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;protocol: 'http'<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;host: **your_host**<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port: 5984<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prefix: **nlims**<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;suffix: **repo**<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;username: **your_username**<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password: **your_password**<br>
+   &nbsp;<br>
+   test:<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<<: *development<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;suffix: test<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;production:<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<<: *development<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;protocol: 'http'<br>
+   
+   
+### Installation
 
-* Database initialization
+   Install ruby gems by running the following command:
+   ```bash
+   bundle install
+   ```
+   Initiate database by running this command;
+   ```bash
+   rails db:create
+   rails db:migrate
+   rails db:seed
+   ```
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
