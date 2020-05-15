@@ -7,18 +7,22 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 test_categories = ['Microbiology','Haematology','Blood Bank','Serology','Lab Reception','Biochemistry','Flow Cytometry','DNA/PCR']
+
+
+puts 'loading test categories--------------'
 categories_id_look_up = {}
 measure_type_id_look_up = {}
 counter = 1
-
-puts 'loading test categories--------------'
-
 test_categories.each do |ca|
-	res = CouchTestCategory.create(name: ca , created_at: DateTime.now.strftime("%d/%m/%Y %H:%M"),type: 'test ategory' )
-	tca = TestCategory.create(name: ca, doc_id: res.id)	
-	categories_id_look_up[counter] = res.id 
+   # tca = TestCategory.create(name: ca, description: '') 
+    tca = TestCategory.new
+    tca.name = ca
+    tca.description = ""
+    tca.save()
+    categories_id_look_up[counter] = tca.id 
 	counter = counter + 1
 end
+
 counter = 1
 test_types = [[1,'TB Microscopic Exam','AFB',2,'20 min'],[2,'GeneXpert','GXp',2,'6 hrs'],
 			  [3,'Gram Stain','GS',2,'1 hr'], [4,'Culture & Sensitivity','C&S',2,'7 days'],
@@ -37,7 +41,7 @@ test_types = [[1,'TB Microscopic Exam','AFB',2,'20 min'],[2,'GeneXpert','GXp',2,
 			  [29,'ABO Blood Grouping','ABO',5,'30 min'],[30,'Cross-match','Xmatch',5,'1 hr'],
 			  [31,'Transfusion Outcome','',5,'30 min'],[32,'Liver Function Tests','LFT',7,'2 hrs'],
 			  [33,'Renal Function Test','RFT',7,'24 hrs'],[34,'Lipogram','LIPO',7,'24 hrs'],
-			  [35,'FBC','FBC',3,'2 hrs'],[36,'Electrolytes','E',7,'2 hrs'],
+			  [35,'FBC','FBC',6,'2 hrs'],[36,'Electrolytes','E',7,'2 hrs'],
 			  [37,'Enzymes','',7,'30 min'],[38,'Glucose','GLU',7,'2 hrs'],[39,'Prothrombin Time','PT',3,'2 hrs'],
 			  [40,'APTT','APTT',3,'2 hrs'],[41,'INR','INR',3,'2 hrs'],
 			  [42,'ESR','ESR',3,'2 hrs'],[43,'Sickling Test','',3,'24hrs'],
@@ -54,82 +58,97 @@ test_types = [[1,'TB Microscopic Exam','AFB',2,'20 min'],[2,'GeneXpert','GXp',2,
 			  [64,'Minerals','',7,'24hrs'],[65,'BioMarkers','',7,'24hrs'],
 			  [66,'Iron Studies','',7,''],[67,'HbA1c','',7,'',1,''],
 			  [68,'Microalbumin','MAL',7,''],[69,'Microprotein','MPR',7,''],
-			  [70,'Von Willebrand Factor','vWf',3,'72'],[71,'Viral Load','VL',9,'30']	
+			  [70,'Von Willebrand Factor','vWf',3,'72'],[71,'Viral Load','VL',9,'30'],
+		          [72,'CrAg','CrAg',6,'50 hrs'],[73,'Urine Lam','UL',6,'5 hrs'],[74,'Urine Dipstick','UDp',6,'2 hrs'],
+	                  [75,'Urea','U',6,'2 hrs'],[76,'Creatinine','Cr',6,'5 hrs'],[77,'ALT','ALT',6,'2 hrs'],[78,'AST','AST',6,'2 hrs']		  
 
 			]
-puts 'loading test types--------------'
 
-test_types.each do |t|
-	_id = categories_id_look_up[t[3]]
-	res = CouchTestType.create(name: t[1], short_name: t[2], test_category_id: _id, targetTAT: t[4])
-	TestType.create(name: t[1], short_name: t[2], test_category_id: t[3], targetTAT: t[4], doc_id: res.id)
+puts 'loading test types--------------'
+data =  {}
+test_types.each do |t|	
+	cat = test_categories[t[3] - 1]	
+	data[t[1]] = {"short_name" => t[2], "test_category" => cat, "target_TAT" => t[4] }
+    TestType.create(name: t[1], short_name: t[2], test_category_id: t[3], targetTAT: t[4],description: '', prevalence_threshold: '')
 end
+TestCatelog.create(_id: "test_types", test_type: data)
+
 
 
 specimen_types = [[1,'Sputum'],[2,'CSF'],[3,'Blood'],[4,'Pleural Fluid'],[5,'Ascitic Fluid'],[6,'Pericardial Fluid'],[7,'Peritoneal Fluid'],
 				  [8,'HVS'], [9,'Swabs'], [10,'Pus'], [11,'Stool'],[12,'Urine'],[13,'Other'],[15,'Semen'],[16,'Swab'],[17,'Synovial Fluid'],
-				  [18,'Plasma'],[19,'DBS (Free drop to DBS card)'],[21,'DBS (Using capillary tube)']
+				  [18,'Plasma'],[19,'DBS (Free drop to DBS card)'],[21,'DBS (Using capillary tube)'],[22,'Serum']
 				]
-
-
 puts 'loading specimen types--------------'
-
+data = []
 specimen_types.each do |sp|
-	res = CouchSpecimenType.create(name: sp[1])
-	SpecimenType.create(name:sp[1], doc_id: res.id)
+    data.push(sp[1])
+    SpecimenType.create(name:sp[1], description: '')
 end
+TestCatelog.create(_id: "specimen_types", specimen_type: data)
 
+testtype_specimentypes = [ [1,1],[2,1],[3,1],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],[3,11],[3,12],[3,13],[3,17],[4,1],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],[4,9],
+						   [4,10],[4,11],[4,12],[4,13],[4,15],[4,17],[5,2],[5,4],[5,5],[5,6],[5,7],[5,13],[5,17],[6,2],[7,1],[7,2],[7,4],[7,5],[7,6],[7,7],[8,2],[8,4],[8,5],[8,6],
+						   [8,7],[8,13],[8,17],[9,8],[9,9],[10,1],[10,2],[10,4],[10,5],[10,6],[10,7],[10,10],[11,12],[12,12],[13,12],[14,11],[15,3],[16,3],[17,15],[18,8],[19,3],[20,3],
+						   [21,3],[22,3],[23,3],[24,3],[25,3],[26,3],[27,3],[28,3],[29,3],[30,3],[31,3],[32,3],[33,3],[34,3],[35,3],[36,3],[37,3],[38,3],[39,3],[40,3],[41,3],[42,3],
+						   [43,3],[44,12],[45,3],[46,3],[47,3],[48,3],[49,3],[50,3],[51,3],[52,3],[53,2],[53,3],[53,4],[53,5],[53,6],[53,7],[53,8],[53,9],[53,10],[53,12],[54,3],[55,3],
+						   [56,3],[57,3],[58,3],[59,3],[60,3],[61,3],[62,3],[63,3],[64,3],[65,3],[66,3],[67,3],[68,3],[69,3],[70,3],[71,3],[71,18],[71,19],[71,21],[73,3],[84,3],[72,22],[72,2],[73,12],[74,12],[75,3],[76,3],[77,3],[78,3]
+						]
 
+puts 'loading test types on specimen types----------------'
+
+testtype_specimentypes.each do |ts|
+	TesttypeSpecimentype.create(test_type_id: ts[0], specimen_type_id: ts[1] )
+end
 
 test_panels = ['CSF Analysis','Urinalysis','Sterile Fluid Analysis','MC&S']
-
 puts 'loading test panels--------------'
-
 test_panels.each do |tp|
-	res = CouchPanelType.create(name: tp)
-	PanelType.create(name: tp, doc_id: res.id)
+    PanelType.create(name: tp, short_name: '')
 end
+TestCatelog.create(_id: "test_panels", test_panel: test_panels )
 
 
 
-
-test_status = ['not-received','pending','started','completed','verified','voided','not-done','test-rejected','drawn']
-
+test_statuses = ['not-received','pending','started','completed','verified','voided','not-done','test-rejected','drawn','failed',]
 puts 'loading test statuses--------------'
-
-test_status.each do |t|
-	res = CouchTestStatus.create(name: t)
-	TestStatus.create(name: t, doc_id: res.id)
+test_statuses.each do |t|
+	TestStatus.create(
+		name: t,
+		test_phase_id: 2
+	)
 end
 
+TestCatelog.create(_id: "test_statuses", test_status: test_statuses )
 
-specimen_status = ['specimen_not_collected','specimen_accepted','specimen_rejected']
+specimen_statuses = ['specimen_not_collected','specimen_accepted','specimen_rejected','specimen_collected']
 puts 'loading specimen statuses--------------'
-
-specimen_status.each do |sps|
-	res = CouchSpecimenType.create(name: sps)
-	SpecimenStatus.create(name:sps, doc_id: res.id)
+specimen_statuses.each do |sps|
+	SpecimenStatus.create(name:sps)
 end
+TestCatelog.create(_id: "specimen_statuses", specimen_status: specimen_statuses )
 
-ward = ['CWC','CWC HDU','CWB','OPD 2','Facilities','OPD 1','CWA','Theatre','Dialysis Unit','ICU','1A','1B','2B','2A','Oncology','3A','Skin','Dental',
+
+
+wards = ['CWC','CWC HDU','CWB','OPD 2','Facilities','OPD 1','CWA','Theatre','Dialysis Unit','ICU','1A','1B','2B','2A','Oncology','3A','Skin','Dental',
 		'3A','3B','Labour','Dental','Skin','Eye','Under 5 Clinic','7B','7C','GYNAE','Casulty','EM OPD','EM HDU','EM LW',
-		'ANC']
-
+		'ANC','ART']
 puts 'loading wards--------------'
-
-ward.each do |w|
-	res =  CouchWard.create(name: w)
-	Ward.create(name: w, doc_id: res.id)	
+wards.each do |w|
+    Ward.create(name: w)
 end
+TestCatelog.create(_id: "wards", ward: wards )
 
 
-measure_type = ['Numeric Range','Alphanumeric Values','Autocomplete','Free Text']
 
+measure_types = ['Numeric Range','Alphanumeric Values','Autocomplete','Free Text']
 puts 'loading measure types--------------'
-measure_type.each do |mt|
-	res = CouchMeasureType.create(name: mt)
-	MeasureType.create(name: mt, doc_id: res.id)
+measure_types.each do |mt|
+    MeasureType.create(name: mt)
 end
+TestCatelog.create(_id: "measure_types", measure_type: measure_types )
+
+
 
 measures = [
 	[1,2,"BS for mps",],[2,2,"Grams stain",''],[3,2,"SERUM AMYLASE",''],[4,2,'calcium',''],[5,2,'SGOT',''],
@@ -210,10 +229,9 @@ measures = [
 
 
 measures.each do |me|
-	res = CouchMeasure.create(name: me[2],unit: me[3],measure_type: 'x')
-	Measure.create(name: me[2], doc_id: res.id, unit: me[3], measure_type_id: me[1])
+    Measure.create(name: me[2], unit: me[3], measure_type_id: me[1],description: '')
 end
-
+TestCatelog.create(_id: "measures", measure: measures )
 
 testtype_measures =[
 		[233,11,74],[234,11,75],[299,31,132],[309,20,115],[311,21,116],[349,1,52],[522,24,119],[523,16,99],
@@ -251,18 +269,7 @@ testtype_measures =[
 
 puts '--------------loading test type measures--------------'
 testtype_measures.each do |tm|
-
-	TesttypeMeasure.create(test_type_id: tm[1] , measure_type_id: tm[2])
-
-end
-
-puts '--------------creating default user account--------------'
-
-puts 'loading test type measures--------------'
-testtype_measures.each do |tm|
-
-	TesttypeMeasure.create(test_type_id: tm[1] , measure_id: tm[2])
-
+    TesttypeMeasure.create(test_type_id: tm[1] , measure_id: tm[2])
 end
 
 puts 'loading panel tests---------------------'
@@ -272,10 +279,7 @@ panel_tests =  [
 	]
 
 panel_tests.each do |pan|
-	Panel.create(
-			test_type_id:  pan[1],
-			panel_type_id: pan[0]
-		)
+	Panel.create(panel_type_id: pan[0],test_type_id: pan[1])
 end
 
 
@@ -798,26 +802,13 @@ ranges = [
 
 ranges.each do |ra|
 
-	MeasureRange.create(
-		measures_id: ra[0],
-		age_min: ra[1],
-		age_max: ra[2],
-		gender: ra[3],
-		range_lower: ra[4],
-		range_upper: ra[5],
-		alphanumeric: ra[6],
-		interpretation: ra[7]
-		)
 end
-
 puts 'creating default user account--------------'
-
 password_has = BCrypt::Password.create("knock_knock")
 username = 'admin'
 app_name = 'nlims'
 location = 'lilongwe'
 partner = 'api_admin'
-
 token = 'xxxxxxx'
 token_expiry_time = '000000000'
 
