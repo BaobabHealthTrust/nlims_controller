@@ -1,10 +1,11 @@
 # README
 
 ### Brief description
-NLims Controller is a Laboratory Information Management Systems' [(LIMS)] (https://github.com/BaobabHealthTrust/iBLIS.git) service which communicates with Eletronic Mecical Record System (EMRS). It is used to accept lab orders from EMRS to LIMS and return to same to EMRS with results.
+NLims Controller is a Laboratory Information Management Systems' [(LIMS)](https://github.com/BaobabHealthTrust/iBLIS.git) service which communicates with Eletronic Mecical Record System [(EMRS)](https://github.com/BaobabHealthTrust/BHT-EMR-API.git). It is used to exhange lab orders between these two systems.
+This README documents steps that are necessary to get the service up and running.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### Requirements
+
 
 Things you may want to cover:
 
