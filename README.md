@@ -8,8 +8,6 @@ This README documents steps that are necessary to get the service up and running
 * ruby ~> 2.5.3
 * bundler ~> 2.1.4
 * rails ~> 5.1.7
-
-### Dependencies
 * Mysql ~> 5.7
 * Couchdb ~> 3.1.0
 
@@ -94,4 +92,13 @@ This README documents steps that are necessary to get the service up and running
    rails db:migrate
    rails db:seed
    ```
+### Development
 
+   To run the application in development server, type the following in commandline:
+   ```bash
+   rails s -p 3010
+   ```
+   Or using a passenger
+   ```bash
+   passenger start -p 3010
+   ```
