@@ -92,6 +92,7 @@ This README documents steps that are necessary to get the service up and running
    rails db:migrate
    rails db:seed
    ```
+   NB: Database initialization is completed by a service called [nlims_data_syncroniser](https://github.com/BaobabHealthTrust/nlims_data_syncroniser.git). This service is used to sync data between mysql to couchdb. 
 ### Development
 
    To run the application in development server, type the following in commandline:
