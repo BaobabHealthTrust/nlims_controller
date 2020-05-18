@@ -189,3 +189,5 @@ This README documents steps that are necessary to get the service up and running
 ### Issues
 
 ### License
+
+[MPL-2.0](https://github.com/BaobabHealthTrust/nlims_controller/blob/master/LICENSE)
