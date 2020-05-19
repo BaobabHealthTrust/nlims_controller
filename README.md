@@ -185,13 +185,10 @@ This README documents steps that are necessary to get the service up and running
       ```
 
 ### Contribution
-
-We are very much willing to have your contributions. 
-Contact [BHT](http://baobabhealth.org/) software development team at developers@bht-mw.org for such arrangements.
+We are very much willing to have your contributions. Contact BHT software development team @ developers@bht-mw.org for such arrangements.
 
 ### Issues
-
-
+Issues with the system can be logged on directy here on [git](https://github.com/BaobabHealthTrust/nlims_data_syncroniser/issues). You can also contact BHT software support team @ bhtsupport@bht-mw.org.
 
 ### License
 
