@@ -1,4 +1,4 @@
-[![GitHub issues](https://img.shields.io/github/issues/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/issues) [![GitHub forks](https://img.shields.io/github/forks/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/network) [![GitHub stars](https://img.shields.io/github/stars/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/stargazers) [![GitHub license](https://img.shields.io/github/license/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller)
+[![GitHub issues](https://img.shields.io/github/issues/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/issues) [![GitHub forks](https://img.shields.io/github/forks/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/network) [![GitHub stars](https://img.shields.io/github/stars/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/stargazers) [![GitHub license](https://img.shields.io/github/license/BaobabHealthTrust/nlims_controller)](https://github.com/BaobabHealthTrust/nlims_controller/blob/master/LICENSE)
 ### Brief description
 
 NLims Controller is a Laboratory Information Management Systems' [(LIMS)](https://github.com/BaobabHealthTrust/iBLIS.git) service which communicates with Eletronic Medical Record System [(EMRS)](https://github.com/BaobabHealthTrust/BHT-EMR-API.git). It is used to exhange lab orders between these two systems.
@@ -24,6 +24,16 @@ This README documents steps that are necessary to get the service up and running
    cp application.yml.example application.yml
    cp couchdb.yml.example couchdb.yml
    cp secrets.yml.example secrets.yml
+   ```
+   
+2. Configure your facility.
+   
+   Using your text editor open application.yml in config and provide district, facility_name and facility_code.
+   Thus, your application.yml should look like this 
+   ```
+   district: "Lilongwe"
+   facility_name: "Kamuzu Central Hospital"
+   facility_code: 'KCH'
    ```
    
 2. Configure your database.
@@ -76,7 +86,7 @@ This README documents steps that are necessary to get the service up and running
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<<: *development<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;suffix: test<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;production:<br>
+   production:<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<<: *development<br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;protocol: 'http'<br>
    
@@ -108,12 +118,78 @@ This README documents steps that are necessary to get the service up and running
 
 ### Production
 
-   To deploy the application in production you can either use nginx or apache2 servers. Nginx is recommended since it has been tested and approved.
+   To deploy the application in production you can either use nginx or apache2 servers. Nginx is recommended since it has been tested and approved by our deployment team.
+   
+   1. Initialize database
+   
+      To initialize database for development, in the database.yml folder in production block, provide the name of the database and the username. In your commandline type the following (replacing **your_password** with your actual password of mysql database):
+      ```
+      export NLIMS_DATABASE_PASSWORD='your_password'
+      ```
+      
+      Then run the following commands to create, migrate and seed data into your database:
+      ```bash
+      rails db:create RAILS_ENV=production
+      rails db:migrate RAILS_ENV=production
+      rails db:seed RAILS_ENV=production
+      ```
+      
+   2. Deploy
+   
+   
 
 ### How to use
 
+   
+   1. Retrieve target labs.
+
+      The following endpont is used to get a list of target labs from LIMS:
+      ```
+      Method: GET
+      URL: http://your_host:3010/api/v1/retrieve_target_labs
+      ```
+   1. Order tests
+
+      The following endpoint is used to order tests in LIMS: 
+      ```
+      Method: POST
+      URL: http://your_host:3010/api/v1/create_order
+      Payload: {
+            "district"=>"Lilongwe",
+            "health_facility_name"=>"Ntchisi District Hospital",
+            "first_name"=>"Ted",
+            "last_name"=>"Talk",
+            "middle_name"=>"",
+            "date_of_birth"=>"1994-05-15",
+            "gender"=>"M",
+            "national_patient_id"=>"P158602329249",
+            "phone_number"=>"", 
+            "who_order_test_last_name"=>"User", 
+            "who_order_test_first_name"=>"Super", 
+            "who_order_test_id"=>"1", 
+            "order_location"=>"TB", 
+            "date_sample_drawn"=>"2020-05-15T14:55:33.000+02:00", 
+            "tests"=>["TB"], 
+            "sample_priority"=>"Diagnosis", 
+            "art_start_date"=>"not_applicable", 
+            "sample_type"=>"Sputum", 
+            "sample_status"=>"specimen_not_collected", 
+            "target_lab"=>"Kamuzu Central Hospital", 
+            "recommended_examination"=>nil, 
+            "treatment_history"=>nil, 
+            "sample_date"=>"2020-05-15", 
+            "sending_facility"=>"Ntchisi District Hospital", 
+            "time_line"=>"NA", 
+            "requesting_clinician"=>"admin"
+        }
+      ```
+
 ### Contribution
+We are very much willing to have your contributions. Contact BHT software development team @ developers@bht-mw.org for such arrangements.
 
 ### Issues
+Issues with the system can be logged on directy here on [git](https://github.com/BaobabHealthTrust/nlims_controller/issues). You can also contact BHT software support team @ bhtsupport@bht-mw.org.
 
 ### License
+
+[MPL-2.0](https://github.com/BaobabHealthTrust/nlims_controller/blob/master/LICENSE)
