@@ -186,6 +186,9 @@ This README documents steps that are necessary to get the service up and running
 
 ### Contribution
 
+We are very much willing to have your contributions. 
+Contact [BHT](http://baobabhealth.org/) software development team at developers@bht-mw.org for such arrangements.
+
 ### Issues
 
 
