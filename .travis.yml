@@ -4,6 +4,7 @@ rvm:
 cache: bundler
 script:
   - gem update --system
+  - gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
   - bundle exec rake db:drop db:create db:migrate db:seed
   - bundle exec rake spec
 before_install:
