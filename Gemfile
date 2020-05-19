@@ -9,14 +9,14 @@ end
 ruby '2.5.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.5'
+# gem 'rails', '~> 5.1.5'
 
 gem 'parallel'
 gem 'ruby-progressbar'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.3.18'
 # Use Puma as the app server
-gem 'puma', '~> 3.7'
+gem 'puma', '~> 3.12'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -33,7 +33,6 @@ gem 'apipie-rails'
 gem 'rest-client'
 
 gem 'couchrest_model'
-gem 'passenger', '~> 5.0', '>= 5.0.30'
 gem 'sucker_punch'
 gem 'passenger'
 group :development, :test do
