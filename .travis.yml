@@ -1,0 +1,13 @@
+language: ruby
+rvm:
+  - 2.6.3
+cache: bundler
+script:
+  - bundle exec rake db:drop db:create db:migrate db:seed
+  - bundle exec rake spec
+before_install:
+  - cat config/database.yml.travis > config/database.yml
+  - cat config/couchdb.yml.travis > config/couchdb.yml
+services:
+  - mysql
+  - couchdb
