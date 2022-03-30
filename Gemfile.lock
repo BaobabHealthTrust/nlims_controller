@@ -113,7 +113,8 @@ GEM
     passenger (6.0.4)
       rack
       rake (>= 0.8.1)
-    puma (3.12.5)
+    puma (4.3.12)
+      nio4r (~> 2.0)
     rack (2.2.2)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -191,7 +192,7 @@ DEPENDENCIES
   mysql2 (>= 0.3.18)
   parallel
   passenger
-  puma (~> 3.12)
+  puma (~> 4.3)
   rest-client
   ruby-progressbar
   spring
